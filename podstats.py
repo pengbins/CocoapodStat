@@ -20,7 +20,7 @@ def main(podName):
         pods = json.loads(resp.content.decode("utf-8"))
         updated_at = pods['stats']['updated_at']  # 2017-03-22 09:09:08 UTC
         dt = datetime.strptime(updated_at, '%Y-%m-%d %H:%M:%S %Z')
-        ts = str(int(dt.timestamp())) + '000000000'
+        ts = str(int(dt.timestamp()))
         values = [str(pods['stats'][k]) for k in KEYS]
         out = ts + '\t' + '\t'.join(values)
         print (out)
