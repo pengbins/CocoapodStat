@@ -4,14 +4,16 @@ python:
 install:
   - pip install requests
 script:
-- python podstats.py libksygpulive      >> data/libksygpulive
-- python podstats.py KSYMediaPlayer_iOS >> data/KSYMediaPlayer_iOS
-- python podstats.py libksygpulive_ks3  >> data/libksygpulive_ks3
-- python podstats.py KSYAirStreamer     >> data/KSYAirStreamer
+  - python podstats.py libksygpulive      >> data/libksygpulive
+  - python podstats.py KSYMediaPlayer_iOS >> data/KSYMediaPlayer_iOS
+  - python podstats.py libksygpulive_ks3  >> data/libksygpulive_ks3
+  - python podstats.py KSYAirStreamer     >> data/KSYAirStreamer
 
 deploy:
   provider: pages
   skip_cleanup: true
   github_token: $GITHUB_TOKEN
+  target_branch: master
   on:
     branch: master
+    condition: $TRAVIS_EVENT_TYPE = api
