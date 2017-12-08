@@ -22,6 +22,8 @@
 <script type="application/ld+json">
 {"name":"CocoapodStat","description":"collect pod statistic data and show","author":null,"@type":"WebSite","url":"https://pengbins.github.io/CocoapodStat/","image":null,"publisher":null,"headline":"CocoapodStat","dateModified":null,"datePublished":null,"sameAs":null,"mainEntityOfPage":null,"@context":"http://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
+<script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="./js/echarts.min.js"></script>
 
   </head>
 
@@ -43,6 +45,50 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <p><a href="https://travis-ci.org/pengbins/CocoapodStat"><img src="https://travis-ci.org/pengbins/CocoapodStat.svg?branch=master" alt="Build Status" /></a></p>
+
+      <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+      <div id="main" style="width: 600px;height:400px;"></div>
+       <script type="text/javascript">
+        var myChart = echarts.init(document.getElementById('main'));
+        $.get('data/libksygpulive').done(function (data) {
+            var lines     = data.split('\n');
+            var length    = lines.length;
+            var ts        = [];
+            var app_total      = [];
+            var app_week       = [];
+            var download_month = [];
+            var download_total = [];
+            var download_week  = [];
+            for(var i = 0; i < length; i+=2){
+                var vals = lines[i].split('\t');
+                var date = new Date( parseInt(vals[0])*1000 );
+                ts.push(date.toLocaleDateString());
+                app_total      .push( parseInt(vals[1]) );
+                app_week       .push( parseInt(vals[2]) );
+                download_month .push( parseInt(vals[3]) );
+                download_total .push( parseInt(vals[4]) );
+                download_week  .push( parseInt(vals[5]) );
+            }
+            myChart.setOption({
+                title: {
+                    text: 'libksygpulive'
+                },
+                tooltip: {},
+                legend: {
+                    data:['app']
+                },
+                xAxis: {
+                    data: ts  
+                },
+                yAxis: {},
+                series: [{
+                    name: 'app',
+                    type: 'line',
+                    data: app_total
+                }]
+            });
+        });
+    </script>
 
       </section>
     </div>
