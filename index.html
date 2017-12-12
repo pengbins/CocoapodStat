@@ -47,47 +47,68 @@
         <p><a href="https://travis-ci.org/pengbins/CocoapodStat"><img src="https://travis-ci.org/pengbins/CocoapodStat.svg?branch=master" alt="Build Status" /></a></p>
 
       <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-      <div id="main" style="width: 600px;height:400px;"></div>
+      <div id="app_total" style="width: 600px;height:400px;"></div>
+      <div id="download_week" style="width: 600px;height:400px;"></div>
+      <div id="download_total" style="width: 600px;height:400px;"></div>
        <script type="text/javascript">
-        var myChart = echarts.init(document.getElementById('main'));
-        $.get('data/libksygpulive').done(function (data) {
-            var lines     = data.split('\n');
-            var length    = lines.length;
-            var ts        = [];
-            var app_total      = [];
-            var app_week       = [];
-            var download_month = [];
-            var download_total = [];
-            var download_week  = [];
-            for(var i = 0; i < length; i+=2){
-                var vals = lines[i].split('\t');
-                var date = new Date( parseInt(vals[0])*1000 );
-                ts.push(date.toLocaleDateString());
-                app_total      .push( parseInt(vals[1]) );
-                app_week       .push( parseInt(vals[2]) );
-                download_month .push( parseInt(vals[3]) );
-                download_total .push( parseInt(vals[4]) );
-                download_week  .push( parseInt(vals[5]) );
-            }
-            myChart.setOption({
+        var chars = [];
+        var charName = ['app_total','download_week','download_total'];
+        var dataName = ['KSYAirStreamer', 'KSYMediaPlayer_iOS', 'libksygpulive','libksygpulive_ks3'];
+        var charSeries = [];
+        for (var i = 0; i < charName.length; i++) {
+            var char = echarts.init(document.getElementById( charName[i] ));
+            char.setOption({
                 title: {
-                    text: 'libksygpulive'
+                    text: charName[i]
                 },
                 tooltip: {},
                 legend: {
-                    data:['app']
+                    data: dataName
                 },
-                xAxis: {
-                    data: ts  
-                },
-                yAxis: {},
-                series: [{
-                    name: 'app',
-                    type: 'line',
-                    data: app_total
-                }]
             });
-        });
+            chars.push(char);
+            charSeries[i] = [];
+        }
+
+        for (var i = 0; i < dataName.length; i++) {
+            var path =  'data/' + dataName[i];
+            console.log( path );
+            $.get(path).done(function (data) {
+                var lines     = data.split('\n');
+                var length    = lines.length;
+                var ts        = [];
+                var app_total      = [];
+                var app_week       = [];
+                var download_month = [];
+                var download_total = [];
+                var download_week  = [];
+                for(var j = 0; j < length; j+=2){
+                    var vals = lines[j].split('\t');
+                    var date = new Date( parseInt(vals[0])*1000 );
+                    ts.push(date.toLocaleDateString());
+                    app_total      .push( parseInt(vals[1]) );
+                    app_week       .push( parseInt(vals[2]) );
+                    download_month .push( parseInt(vals[3]) );
+                    download_total .push( parseInt(vals[4]) );
+                    download_week  .push( parseInt(vals[5]) );
+                }
+                var serData = [ app_total, download_week, download_total];
+                for (var j = 0; j < charName.length; j++) {
+                    charSeries[j].push({
+                        name: dataName[i],
+                        type: 'line',
+                        data: serData[j]
+                    });
+                    chars[j].setOption({
+                        xAxis: {
+                            data: ts
+                        },
+                        yAxis: {},
+                        series: charSeries[j]
+                    });
+                }
+            });
+        }
     </script>
 
       </section>
