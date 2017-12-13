@@ -47,9 +47,9 @@
         <p><a href="https://travis-ci.org/pengbins/CocoapodStat"><img src="https://travis-ci.org/pengbins/CocoapodStat.svg?branch=master" alt="Build Status" /></a></p>
 
       <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-      <div id="app_total" style="width: 600px;height:400px;"></div>
-      <div id="download_week" style="width: 600px;height:400px;"></div>
-      <div id="download_total" style="width: 600px;height:400px;"></div>
+      <div id="app_total" style="width: 900px;height:600px;"></div>
+      <div id="download_week" style="width: 900px;height:600px;"></div>
+      <div id="download_total" style="width: 900px;height:600px;"></div>
        <script type="text/javascript">
         var chars = [];
         var charName = ['app_total','download_week','download_total'];
@@ -72,7 +72,6 @@
 
         for (var i = 0; i < dataName.length; i++) {
             var path =  'data/' + dataName[i];
-            console.log( path );
             $.get(path).done(function (data) {
                 var lines     = data.split('\n');
                 var length    = lines.length;
@@ -92,10 +91,11 @@
                     download_total .push( parseInt(vals[4]) );
                     download_week  .push( parseInt(vals[5]) );
                 }
+                var legend = this.url.split('/')[1];
                 var serData = [ app_total, download_week, download_total];
                 for (var j = 0; j < charName.length; j++) {
                     charSeries[j].push({
-                        name: dataName[i],
+                        name: legend,
                         type: 'line',
                         data: serData[j]
                     });
