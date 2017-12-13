@@ -99,3 +99,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# timestamp file from Travis CI
+deployed at * by Deployment Bot (from Travis CI)
