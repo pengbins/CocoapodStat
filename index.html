@@ -53,62 +53,74 @@
        <script type="text/javascript">
         var chars = [];
         var charName = ['app_total','download_week','download_total'];
-        var dataName = ['KSYAirStreamer', 'KSYMediaPlayer_iOS', 'libksygpulive','libksygpulive_ks3'];
+        var dataName = [];
         var charSeries = [];
-        for (var i = 0; i < charName.length; i++) {
-            var char = echarts.init(document.getElementById( charName[i] ));
-            char.setOption({
-                title: {
-                    text: charName[i]
-                },
-                tooltip: {},
-                legend: {
-                    data: dataName
-                },
-            });
-            chars.push(char);
-            charSeries[i] = [];
+        function onDataLoad(data) {
+            var lines     = data.split('\n');
+            var length    = lines.length;
+            var ts        = [];
+            var app_total      = [];
+            var app_week       = [];
+            var download_month = [];
+            var download_total = [];
+            var download_week  = [];
+            for(var j = 0; j < length; j++){
+                var vals = lines[j].split('\t');
+                var date = new Date( parseInt(vals[0])*1000 );
+                ts.push(date.toLocaleDateString());
+                app_total      .push( parseInt(vals[1]) );
+                app_week       .push( parseInt(vals[2]) );
+                download_month .push( parseInt(vals[3]) );
+                download_total .push( parseInt(vals[4]) );
+                download_week  .push( parseInt(vals[5]) );
+            }
+            var legend = this.url.split('/')[1];
+            var serData = [ app_total, download_week, download_total];
+            for (var j = 0; j < charName.length; j++) {
+                charSeries[j].push({
+                    name: legend,
+                    type: 'line',
+                    data: serData[j]
+                });
+                chars[j].setOption({
+                    xAxis: {
+                        data: ts
+                    },
+                    yAxis: {},
+                    series: charSeries[j]
+                });
+            }
         }
+        function initChars(){
+            for (var i = 0; i < charName.length; i++) {
+                var char = echarts.init(document.getElementById( charName[i] ));
+                char.setOption({
+                    title: {
+                        text: charName[i]
+                    },
+                    tooltip: {},
+                    legend: {
+                        data: dataName
+                    },
+                });
+                chars.push(char);
+                charSeries[i] = [];
+            }
 
-        for (var i = 0; i < dataName.length; i++) {
-            var path =  'data/' + dataName[i];
-            $.get(path).done(function (data) {
-                var lines     = data.split('\n');
-                var length    = lines.length;
-                var ts        = [];
-                var app_total      = [];
-                var app_week       = [];
-                var download_month = [];
-                var download_total = [];
-                var download_week  = [];
-                for(var j = 0; j < length; j+=2){
-                    var vals = lines[j].split('\t');
-                    var date = new Date( parseInt(vals[0])*1000 );
-                    ts.push(date.toLocaleDateString());
-                    app_total      .push( parseInt(vals[1]) );
-                    app_week       .push( parseInt(vals[2]) );
-                    download_month .push( parseInt(vals[3]) );
-                    download_total .push( parseInt(vals[4]) );
-                    download_week  .push( parseInt(vals[5]) );
-                }
-                var legend = this.url.split('/')[1];
-                var serData = [ app_total, download_week, download_total];
-                for (var j = 0; j < charName.length; j++) {
-                    charSeries[j].push({
-                        name: legend,
-                        type: 'line',
-                        data: serData[j]
-                    });
-                    chars[j].setOption({
-                        xAxis: {
-                            data: ts
-                        },
-                        yAxis: {},
-                        series: charSeries[j]
-                    });
-                }
-            });
+            for (var i = 0; i < dataName.length; i++) {
+                var path =  'data/' + dataName[i];
+                $.get(path).done(onDataLoad);
+            }
+
         }
+        $.get('pods').done(function (data) {
+            var lines     = data.split('\n');
+            var length    = lines.length;
+            for(var j = 0; j < length; j++){
+                dataName.push(lines[j]);
+            }
+            initChars();
+        });
     </script>
 
       </section>
