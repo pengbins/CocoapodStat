@@ -1,0 +1,16 @@
+language: python
+python:
+  - "3.5"
+install:
+  - pip install requests
+script:
+  - "./run.sh"
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  target_branch: master
+  on:
+    branch: master
+    condition: $TRAVIS_EVENT_TYPE = cron
